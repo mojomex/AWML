@@ -5,7 +5,7 @@
   ],
   "python.defaultInterpreterPath": "/opt/conda/bin/python3",
   "[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.formatOnSaveMode": "file",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {

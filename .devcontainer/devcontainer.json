@@ -3,7 +3,7 @@
   "build": {
     "dockerfile": "Dockerfile",
     "args": {
-      "BASE_IMAGE": "autoware-ml"
+      "BASE_IMAGE": "autoware-ml-ptv3"
     }
   },
   "remoteUser": "autoware",
@@ -15,7 +15,7 @@
   "runArgs": [
     "-it",
     "--rm",
-    "--name=autoware-ml",
+    "--name=autoware-ml-ptv3",
     "--privileged",
     "--env",
     "DISPLAY=${env:DISPLAY}",
@@ -32,7 +32,7 @@
     "--volume=/tmp/.X11-unix/:/tmp/.X11-unix",
     "--volume=/etc/localtime:/etc/localtime:ro",
     "--volume=/dev/dri:/dev/dri:ro",
-    "--volume=${env:HOME}/autoware_data:/home/autoware/autoware_data",
+    "--volume=/mnt/qnapdata/internal:/mnt/qnapdata/internal:ro",
     "--gpus",
     "all",
     "--shm-size=64gb"
@@ -51,6 +51,7 @@
         "ms-python.python",
         "ms-toolsai.jupyter",
         "eeyore.yapf",
+        "charliermarsh.ruff",
         // Git",
         "eamodio.gitlens",
         "github.vscode-pull-request-github",

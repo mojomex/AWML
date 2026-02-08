@@ -1,4 +1,4 @@
-ARG AWML_BASE_IMAGE="autoware-ml"
+ARG AWML_BASE_IMAGE="ghcr.io/tier4/awml:base-latest"
 FROM ${AWML_BASE_IMAGE}
 
 ENV FLASH_ATTN_CUDA_ARCHS="120"
@@ -15,4 +15,5 @@ RUN python3 -m pip --no-cache-dir install \
   termcolor \
   torch-scatter -f https://data.pyg.org/whl/torch-2.8.0+cu129.html \
   tqdm \
-  yapf==0.40.1
+  yapf==0.40.1 \
+  timm==1.0.24
