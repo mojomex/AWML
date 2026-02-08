@@ -379,13 +379,6 @@ if train_gpu_size > 1:
 vis_backends = [
     dict(type="LocalVisBackend"),
     dict(type="TensorboardVisBackend"),
-    dict(
-        type="SafeMLflowVisBackend",
-        exp_name="(UserName) ConcertoCenterPoint",
-        run_name="ConcertoCenterPoint base",
-        tracking_uri="http://localhost:5000",
-        artifact_suffix=(),
-    ),
 ]
 visualizer = dict(
     type="Det3DLocalVisualizer", vis_backends=vis_backends, name="visualizer"
