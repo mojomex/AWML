@@ -13,13 +13,14 @@ from typing import Dict, List, Optional, Tuple
 import torch
 from mmdet3d.registry import MODELS
 from mmdet3d.structures import Det3DDataSample
+from mmengine.model import BaseModel
 from torch import Tensor
 
 from projects.Concerto.concerto.structure import Point
 
 
 @MODELS.register_module()
-class ConcertoCenterPoint(torch.nn.Module):
+class ConcertoCenterPoint(BaseModel):
     """CenterPoint detector using a Concerto (PTv3) backbone.
 
     Unlike the standard :class:`CenterPoint` which inherits
@@ -55,10 +56,9 @@ class ConcertoCenterPoint(torch.nn.Module):
         test_cfg: Optional[dict] = None,
         freeze_backbone: bool = True,
     ) -> None:
-        super().__init__()
+        super().__init__(data_preprocessor=data_preprocessor)
 
         # ---------- build sub-modules via MODELS registry ----------
-        self.data_preprocessor = MODELS.build(data_preprocessor)
         self.backbone = self._build_backbone(backbone)
         self.neck = MODELS.build(neck)
 
