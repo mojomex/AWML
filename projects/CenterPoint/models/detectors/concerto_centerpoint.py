@@ -132,7 +132,7 @@ class ConcertoCenterPoint(BaseModel):
             point: Point = self.backbone(ptv3_dict)
 
         # Extract the offset-batched tensors from the Point dict
-        feat = point.feat  # (N, C) e.g. (N, 1088)
+        feat = point.feat  # (N, C) e.g. (N, 1536)
         coord = point.coord  # (N, 3)
 
         # Compute per-point batch index from offset

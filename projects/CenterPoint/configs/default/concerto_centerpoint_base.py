@@ -7,9 +7,9 @@
 # See docs/design/concerto_centerpoint_adaptation.md for the full design.
 
 # The ConcertoLargeOutdoorXYZ backbone with up_cast_level=2 produces:
-#   - 1088-dim features (192 + 384 + 512, from enc2 + enc3 + enc4)
+#   - 1536-dim features (256 + 512 + 768, from enc2 + enc3 + enc4)
 #   - 0.20 m effective resolution (enc2 grid)
-# SparseBEVNeck projects 1088 → 384 and scatters into (B, 384, 510, 510).
+# SparseBEVNeck projects 1536 → 384 and scatters into (B, 384, 510, 510).
 
 out_size_factor = 2
 
@@ -28,7 +28,7 @@ model = dict(
     ),
     neck=dict(
         type="SparseBEVNeck",
-        in_channels=1088,  # 192 + 384 + 512 from up_cast_level=2
+        in_channels=1536,  # 256 + 512 + 768 from up_cast_level=2
         out_channels=384,
         bev_h=510,
         bev_w=510,

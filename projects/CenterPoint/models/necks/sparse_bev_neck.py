@@ -22,7 +22,7 @@ class SparseBEVNeck(nn.Module):
     Performs the following steps in a single efficient pass:
 
     1. **Channel projection** — Linear + BN + ReLU maps the backbone's
-       high-dimensional features (e.g. 1088) to the target dimension
+       high-dimensional features (e.g. 1536) to the target dimension
        (e.g. 384).
     2. **BEV quantization** — Maps real-world XY coordinates into
        the target BEV grid using ``floor((xy - range_min) / cell_size)``.
