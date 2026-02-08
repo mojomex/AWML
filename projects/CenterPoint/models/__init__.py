@@ -4,8 +4,10 @@ from .dense_heads.centerpoint_head import CenterHead, CustomSeparateHead
 from .dense_heads.centerpoint_head_onnx import CenterHeadONNX, SeparateHeadONNX
 from .detectors.centerpoint import CenterPoint
 from .detectors.centerpoint_onnx import CenterPointONNX
+from .detectors.concerto_centerpoint import ConcertoCenterPoint
 from .losses.amp_gaussian_focal_loss import AmpGaussianFocalLoss
 from .necks.second_fpn import SECONDFPN
+from .necks.sparse_bev_neck import SparseBEVNeck
 from .task_modules.coders.centerpoint_bbox_coders import CenterPointBBoxCoder
 from .voxel_encoders.pillar_encoder import BackwardPillarFeatureNet
 from .voxel_encoders.pillar_encoder_onnx import (
@@ -17,6 +19,7 @@ __all__ = [
     "SECOND",
     "SECONDFPN",
     "CenterPoint",
+    "ConcertoCenterPoint",
     "CenterHead",
     "CustomSeparateHead",
     "BackwardPillarFeatureNet",
@@ -28,4 +31,5 @@ __all__ = [
     "CenterPointBBoxCoder",
     "AmpGaussianFocalLoss",
     "PTv3DetDataPreprocessor",
+    "SparseBEVNeck",
 ]
