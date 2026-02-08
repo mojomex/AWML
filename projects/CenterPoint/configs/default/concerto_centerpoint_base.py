@@ -23,6 +23,7 @@ model = dict(
     backbone=dict(
         type="ConcertoLargeOutdoorXYZ",
         enc_mode=True,
+        freeze_encoder=True,
         up_cast_level=2,
     ),
     neck=dict(
