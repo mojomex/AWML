@@ -400,4 +400,4 @@ custom_hooks = [
     dict(type="LossScaleInfoHook"),
 ]
 
-load_from = "<best_checkpoint>"
+load_from = None
