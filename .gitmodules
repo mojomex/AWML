@@ -1,0 +1,3 @@
+[submodule "projects/Concerto"]
+	path = projects/Concerto
+	url = https://github.com/Pointcept/Concerto
