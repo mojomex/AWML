@@ -28,7 +28,7 @@ model = dict(
     ),
     neck=dict(
         type="SparseBEVNeck",
-        in_channels=768,  # 256 + 512 from up_cast_level=1
+        in_channels=1280,  # 512 + 768 from up_cast_level=1
         out_channels=384,
         bev_h=510,
         bev_w=510,
