@@ -11,16 +11,16 @@ See docs/design/concerto_centerpoint_adaptation.md for the full design.
 from typing import Dict, List, Optional, Tuple
 
 import torch
+from mmdet3d.models import Base3DDetector
 from mmdet3d.registry import MODELS
 from mmdet3d.structures import Det3DDataSample
-from mmengine.model import BaseModel
 from torch import Tensor
 
 from projects.Concerto.concerto.structure import Point
 
 
 @MODELS.register_module()
-class ConcertoCenterPoint(BaseModel):
+class ConcertoCenterPoint(Base3DDetector):
     """CenterPoint detector using a Concerto (PTv3) backbone.
 
     Unlike the standard :class:`CenterPoint` which inherits
@@ -56,7 +56,7 @@ class ConcertoCenterPoint(BaseModel):
         test_cfg: Optional[dict] = None,
         freeze_backbone: bool = True,
     ) -> None:
-        super().__init__(data_preprocessor=data_preprocessor)
+        super().__init__(data_preprocessor=data_preprocessor, init_cfg=None)
 
         # ---------- build sub-modules via MODELS registry ----------
         self.backbone = self._build_backbone(backbone)
@@ -172,30 +172,8 @@ class ConcertoCenterPoint(BaseModel):
     # train / val / test entry points
     # ------------------------------------------------------------------
 
-    def forward(
-        self,
-        inputs: dict,
-        data_samples: Optional[List[Det3DDataSample]] = None,
-        mode: str = "tensor",
-        **kwargs,
-    ):
-        """Dispatcher matching mmdet3d's ``BaseModel.forward`` protocol.
-
-        Args:
-            inputs: Raw collated batch dict from the dataloader.
-            data_samples: Annotation / meta-info.
-            mode: ``"loss"`` | ``"predict"`` | ``"tensor"``.
-        """
-        if mode == "loss":
-            assert data_samples is not None
-            return self.loss(inputs, data_samples, **kwargs)
-        elif mode == "predict":
-            assert data_samples is not None
-            return self.predict(inputs, data_samples, **kwargs)
-        elif mode == "tensor":
-            return self._forward(inputs, data_samples, **kwargs)
-        else:
-            raise RuntimeError(f"Invalid mode '{mode}'")
+    # forward() is inherited from Base3DDetector and dispatches to
+    # loss / predict / _forward / aug_test based on ``mode``.
 
     def loss(
         self,
@@ -233,8 +211,10 @@ class ConcertoCenterPoint(BaseModel):
             List of ``Det3DDataSample`` with predicted bboxes.
         """
         bev_feats = self.extract_feat(batch_inputs_dict)
-        results = self.bbox_head.predict(bev_feats, batch_data_samples, **kwargs)
-        return results
+        results_list_3d = self.bbox_head.predict(
+            bev_feats, batch_data_samples, **kwargs
+        )
+        return self.add_pred_to_datasample(batch_data_samples, results_list_3d)
 
     def _forward(
         self,
@@ -245,6 +225,21 @@ class ConcertoCenterPoint(BaseModel):
         """Raw feature extraction (tensor mode)."""
         bev_feats = self.extract_feat(batch_inputs_dict)
         return (bev_feats,)
+
+    def aug_test(
+        self,
+        batch_inputs_dict: List[Dict],
+        batch_data_samples: List[List[Det3DDataSample]],
+        **kwargs,
+    ) -> List[Det3DDataSample]:
+        """Test-time augmentation — not implemented.
+
+        Raises:
+            NotImplementedError: Always, TTA is not supported.
+        """
+        raise NotImplementedError(
+            "Test-time augmentation is not supported for ConcertoCenterPoint."
+        )
 
     # ------------------------------------------------------------------
     # Backbone train/eval mode management
