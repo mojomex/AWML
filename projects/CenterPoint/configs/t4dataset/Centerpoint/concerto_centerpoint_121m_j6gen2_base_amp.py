@@ -46,7 +46,7 @@ info_directory_path = "info/kokseang_2_5/"
 train_gpu_size = 1
 train_batch_size = 16
 test_batch_size = 2
-num_workers = 32
+num_workers = 16
 val_interval = 1
 max_epochs = 10
 
