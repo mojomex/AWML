@@ -24,17 +24,17 @@ model = dict(
         type="ConcertoLargeOutdoorXYZ",
         enc_mode=True,
         freeze_encoder=True,
-        up_cast_level=2,
+        up_cast_level=1,
     ),
     neck=dict(
         type="SparseBEVNeck",
-        in_channels=1536,  # 256 + 512 + 768 from up_cast_level=2
+        in_channels=768,  # 256 + 512 from up_cast_level=1
         out_channels=384,
         bev_h=510,
         bev_w=510,
         point_cloud_range=[-122.4, -122.4, -3.0, 122.4, 122.4, 5.0],
         target_cell_size=0.48,  # voxel_size (0.24) × out_size_factor (2)
-        num_convs=3,
+        num_convs=0,
     ),
     bbox_head=dict(
         type="CenterHead",
