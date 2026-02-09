@@ -48,7 +48,7 @@ train_batch_size = 16
 test_batch_size = 2
 num_workers = 32
 val_interval = 1
-max_epochs = 30
+max_epochs = 10
 
 experiment_group_name = "centerpoint/j6gen2_base/" + _base_.dataset_type
 experiment_name = "concerto_centerpoint_121m_j6gen2_base_amp"
