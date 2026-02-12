@@ -278,6 +278,12 @@ model = dict(
             pc_range=point_cloud_range,
             post_center_range=[-200.0, -200.0, -10.0, 200.0, 200.0, 10.0],
             out_size_factor=out_size_factor,
+            # Override base score_threshold=0.1 which is incompatible with
+            # init_bias=-4.595 (sigmoid ≈ 0.01).  With the aggressive AMP bias
+            # the heatmap needs many iterations before any cell exceeds 0.1,
+            # producing zero predictions in the meantime.  Disabling the hard
+            # threshold lets top-k + NMS handle box selection instead.
+            score_threshold=None,
         ),
         separate_head=dict(type="CustomSeparateHead", init_bias=-4.595, final_kernel=1),
         loss_cls=dict(

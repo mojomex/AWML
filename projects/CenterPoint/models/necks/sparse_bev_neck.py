@@ -130,17 +130,22 @@ class SparseBEVNeck(nn.Module):
         proj = self.channel_proj(feat)
 
         # 2. Quantize XY → target BEV grid indices
-        xy = coord[:, :2]  # (N, 2)
+        #
+        # CenterPoint's CenterPointBBoxCoder.decode() assumes the standard
+        # BEV layout used by PointPillarsScatter:
+        #     dim-2 (H / rows)  ↔  y-axis
+        #     dim-3 (W / cols)  ↔  x-axis
+        #
+        # So we map:  row = (y - y_min) / cell,  col = (x - x_min) / cell.
+        xy = coord[:, :2]  # (N, 2): [x, y]
         range_min: Tensor = self.range_min  # type: ignore[assignment]
-        bev_ij = ((xy - range_min) / self.target_cell_size).long()
-        bev_ij[:, 0].clamp_(0, self.bev_h - 1)
-        bev_ij[:, 1].clamp_(0, self.bev_w - 1)
+        grid = ((xy - range_min) / self.target_cell_size).long()
+        col_idx = grid[:, 0].clamp_(0, self.bev_w - 1)  # x → column (W)
+        row_idx = grid[:, 1].clamp_(0, self.bev_h - 1)  # y → row    (H)
 
         # 3. Scatter-max into dense (B*H*W, C) — implicitly pools Z
         linear_idx = (
-            batch.long() * (self.bev_h * self.bev_w)
-            + bev_ij[:, 0] * self.bev_w
-            + bev_ij[:, 1]
+            batch.long() * (self.bev_h * self.bev_w) + row_idx * self.bev_w + col_idx
         )  # (N,)
 
         total_cells = batch_size * self.bev_h * self.bev_w
