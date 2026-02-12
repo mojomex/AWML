@@ -1,6 +1,6 @@
 _base_ = [
     "../../../../../autoware_ml/configs/detection3d/default_runtime.py",
-    "../../../../../autoware_ml/configs/detection3d/dataset/t4dataset/j6gen2_base.py",
+    "../../../../../autoware_ml/configs/detection3d/dataset/t4dataset/smoke_run.py",
     "../../default/concerto_centerpoint_base.py",
 ]
 custom_imports = dict(
@@ -41,8 +41,8 @@ eval_class_range = {
 }
 
 # user setting
-data_root = "/mnt/qnapdata/internal/t4datasets/"
-info_directory_path = "info/kokseang_2_5/"
+data_root = "/mnt/qnapdata/internal/t4datasets/info/max/"
+info_directory_path = ""
 train_gpu_size = 1
 train_batch_size = 16
 test_batch_size = 2
@@ -72,23 +72,23 @@ train_pipeline = [
         backend_args=backend_args,
     ),
     dict(type="LoadAnnotations3D", with_bbox_3d=True, with_label_3d=True),
-    dict(
-        type="RandomFlip3D",
-        sync_2d=False,
-        flip_ratio_bev_horizontal=0.5,
-        flip_ratio_bev_vertical=0.5,
-    ),
-    dict(
-        type="GlobalRotScaleTrans",
-        rot_range=[-1.571, 1.571],
-        scale_ratio_range=[0.80, 1.20],
-        translation_std=[1.0, 1.0, 0.2],
-    ),
+    # dict(
+    #     type="RandomFlip3D",
+    #     sync_2d=False,
+    #     flip_ratio_bev_horizontal=0.5,
+    #     flip_ratio_bev_vertical=0.5,
+    # ),
+    # dict(
+    #     type="GlobalRotScaleTrans",
+    #     rot_range=[-1.571, 1.571],
+    #     scale_ratio_range=[0.80, 1.20],
+    #     translation_std=[1.0, 1.0, 0.2],
+    # ),
     dict(type="PointsRangeFilter", point_cloud_range=point_cloud_range),
     dict(type="ObjectRangeFilter", point_cloud_range=point_cloud_range),
     dict(type="ObjectNameFilter", classes={{_base_.class_names}}),
     dict(type="ObjectMinPointsFilter", min_num_points=5),
-    dict(type="PointShuffle"),
+    # dict(type="PointShuffle"),
     dict(type="Pack3DDetInputs", keys=["points", "gt_bboxes_3d", "gt_labels_3d"]),
 ]
 

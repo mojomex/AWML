@@ -33,6 +33,7 @@
     "--volume=/etc/localtime:/etc/localtime:ro",
     "--volume=/dev/dri:/dev/dri:ro",
     "--volume=/mnt/qnapdata/internal:/mnt/qnapdata/internal:ro",
+    "--volume=/mnt/qnapdata/internal/t4datasets/info/max:/mnt/qnapdata/internal/t4datasets/info/max:rw",
     "--gpus",
     "all",
     "--shm-size=64gb"
