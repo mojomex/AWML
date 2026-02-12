@@ -1,6 +1,6 @@
 _base_ = [
     "../../../../../autoware_ml/configs/detection3d/default_runtime.py",
-    "../../../../../autoware_ml/configs/detection3d/dataset/t4dataset/smoke_run.py",
+    "../../../../../autoware_ml/configs/detection3d/dataset/t4dataset/j6gen2_v6.py",
     "../../default/concerto_centerpoint_base.py",
 ]
 custom_imports = dict(
@@ -41,8 +41,8 @@ eval_class_range = {
 }
 
 # user setting
-data_root = "/mnt/qnapdata/internal/t4datasets/info/max/"
-info_directory_path = ""
+data_root = "/mnt/qnapdata/internal/t4datasets/"
+info_directory_path = "info/kokseang_2_5/"
 train_gpu_size = 1
 train_batch_size = 16
 test_batch_size = 2
@@ -50,7 +50,7 @@ num_workers = 16
 val_interval = 1
 max_epochs = 10
 
-experiment_group_name = "centerpoint/j6gen2_base/" + _base_.dataset_type
+experiment_group_name = "centerpoint/j6gen2_v6/" + _base_.dataset_type
 experiment_name = "concerto_centerpoint_121m_j6gen2_base_amp"
 work_dir = "work_dirs/" + experiment_group_name + "/" + experiment_name
 
