@@ -1,0 +1,8 @@
+version: 1
+dataset_version: db-j6gen2-v8.0
+train:
+  - 45fe2acf-3c96-4df0-a3f2-81df60ca20f5/0
+val:
+  - 45fe2acf-3c96-4df0-a3f2-81df60ca20f5/0
+test:
+  - 45fe2acf-3c96-4df0-a3f2-81df60ca20f5/0
