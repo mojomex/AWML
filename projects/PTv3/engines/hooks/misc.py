@@ -213,6 +213,7 @@ class CheckpointLoader(HookBase):
                 if comm.get_world_size() == 1:
                     key = key[7:]  # module.xxx.xxx -> xxx.xxx
                 weight[key] = value
+            weight._metadata = getattr(checkpoint["state_dict"], "_metadata", OrderedDict())
             load_state_info = self.trainer.model.load_state_dict(weight, strict=self.strict)
             self.trainer.logger.info(f"Missing keys: {load_state_info[0]}")
             if self.trainer.cfg.resume:

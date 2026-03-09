@@ -3,7 +3,7 @@
   "build": {
     "dockerfile": "Dockerfile",
     "args": {
-      "BASE_IMAGE": "autoware-ml"
+      "BASE_IMAGE": "autoware-ml-ptv3"
     }
   },
   "remoteUser": "autoware",

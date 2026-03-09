@@ -2,13 +2,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: Current File",
+      "name": "Python Debugger: Current File with Arguments",
       "type": "debugpy",
       "request": "launch",
-      "program": "${file}",
-      "args": [],
+      "program": "${workspaceFolder}/projects/PTv3/tools/test.py",
       "console": "integratedTerminal",
-      "justMyCode": false
+      "args": [
+        "--config-file", "${workspaceFolder}/projects/PTv3/configs/j6gen2_augtest05.py",
+        "--num-gpus", "1",
+        "--options",
+        "save_path=${workspaceFolder}/work_dirs/experiments/augmentation/j6gen2_baseline-j6gen2_augtest05_drivable01",
+        "weight=${workspaceFolder}/work_dirs/experiments/augmentation/j6gen2_aug01/model/model_best.pth"
+      ]
     }
   ]
 }
