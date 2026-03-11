@@ -4,6 +4,7 @@
 #   "rerun-sdk",
 #   "numpy",
 #   "natsort",
+#   "matplotlib",
 # ]
 # ///
 """
@@ -33,6 +34,20 @@ from pathlib import Path
 import importlib.util
 import sys
 import natsort
+import matplotlib.pyplot as plt
+
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+def _get_cmap_colors(cmap_name, n_colors) -> list[tuple[int, int, int]]:
+    cmap = plt.colormaps.get_cmap(cmap_name)
+    
+    # Generate N evenly spaced indices between 0 and 1
+    colors = [cmap(i) for i in np.linspace(0, 1, n_colors)]
+    colors = [(int(r * 255), int(g * 255), int(b * 255)) for r, g, b, _ in colors]
+    return colors
 
 
 def _import_module(module_name: str, module_path: Path) -> ModuleType:
@@ -52,9 +67,9 @@ def _get_class_mapping(config: ModuleType) -> dict[str, int]:
 def _get_class_colors(config: ModuleType) -> dict[int, tuple[int, int, int]]:
     if not hasattr(config, "class_colors"):
         raise ValueError(f"Config file does not have 'class_colors' attribute")
-    print("Class colors:")
+    logger.info("Class colors:")
     for class_id, color in config.class_colors.items():
-        print(f"  Class ID {class_id}: Color {color}")
+        logger.info(f"  Class ID {class_id}: Color {color}")
     return config.class_colors
 
 
@@ -119,10 +134,10 @@ def visualize_lidarseg_result(
     npz_files = natsort.natsorted(result_dir.glob("*.npz"))
 
     if len(npz_files) == 0:
-        print(f"No npz files found in {result_dir}")
+        logger.warning(f"No npz files found in {result_dir}")
         return
 
-    print(f"Found {len(npz_files)} npz files")
+    logger.info(f"Found {len(npz_files)} npz files")
 
     # Process each file
     processed_count = 0
@@ -131,7 +146,7 @@ def visualize_lidarseg_result(
             # Extract sequence number from filename: `<number>_<rest>.npz` -> `<number>`
             seq_num = _extract_sequence_number(npz_file.name)
             if seq_num is None:
-                print(f"Warning: Could not extract sequence number from {npz_file.name}, skipping")
+                logger.warning(f"Could not extract sequence number from {npz_file.name}, skipping")
                 continue
 
             # Load npz file
@@ -139,7 +154,7 @@ def visualize_lidarseg_result(
 
             # Check for required keys
             if "pred" not in data or "feat" not in data:
-                print(f"Warning: Skipping {npz_file.name} - missing 'pred' or 'feat' keys")
+                logger.warning(f"Skipping {npz_file.name} - missing 'pred' or 'feat' keys")
                 continue
 
             # Extract data
@@ -148,14 +163,14 @@ def visualize_lidarseg_result(
 
             # Take only first 3 columns (x, y, z)
             if features.shape[1] < 3:
-                print(f"Warning: Skipping {npz_file.name} - 'feat' has less than 3 columns")
+                logger.warning(f"Skipping {npz_file.name} - 'feat' has less than 3 columns")
                 continue
 
             points = features[:, :3]
 
             # Check dimensions match
             if len(labels) != len(points):
-                print(f"Warning: Skipping {npz_file.name} - dimension mismatch")
+                logger.warning(f"Skipping {npz_file.name} - dimension mismatch")
                 continue
 
             # Log to Rerun with sequence number as timeline
@@ -164,19 +179,19 @@ def visualize_lidarseg_result(
             # Log the point cloud with class labels
             rr.log("/pointcloud", rr.Points3D(positions=points, class_ids=labels.astype(np.uint16)))
 
-            print(f"Processed {npz_file.name} (sequence {seq_num}). Logged {len(points)} points.")
+            logger.info(f"Processed {npz_file.name} (sequence {seq_num}). Logged {len(points)} points.")
             processed_count += 1
 
         except Exception as e:
-            print(f"Error processing {npz_file.name}: {e}")
+            logger.error(f"Error processing {npz_file.name}: {e}")
             continue
 
-    print(f"\nVisualization complete! Processed {processed_count} point clouds")
+    logger.info(f"\nVisualization complete! Processed {processed_count} point clouds")
 
     if recording_path is not None:
-        print(f"Saving Rerun recording to {recording_path}...")
+        logger.info(f"Saving Rerun recording to {recording_path}...")
         rr.save(recording_path)
-        print(f"Rerun recording saved.")
+        logger.info(f"Rerun recording saved.")
 
 
 def main():
@@ -210,7 +225,15 @@ def main():
 
     config = _import_module("config", config_path)
     class_mapping = _get_class_mapping(config)
-    class_colors = _get_class_colors(config)
+
+    try:
+        class_colors = _get_class_colors(config)
+    except ValueError as e:
+        logger.warning(f"Could not get class colors: {e}")
+        logger.info("Falling back to generic colors")
+
+        cmap_colors = _get_cmap_colors("tab20", n_colors=len(class_mapping))
+        class_colors = {class_id: color for class_id, color in zip(class_mapping.values(), cmap_colors)}
 
     annotation_context = _make_rerun_annotation_context(class_mapping, class_colors)
     visualize_lidarseg_result(result_dir, args.recording_name, annotation_context, args.recording_path)
